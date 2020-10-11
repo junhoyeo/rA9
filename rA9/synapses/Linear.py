@@ -12,13 +12,14 @@ class Linear(Module):
         super(Linear, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
-        self.zeros = jnp.zeros((in_features,out_features))
+        self.zeros = jnp.zeros((in_features, out_features))
         self.tau = tau
         self.weight = None
         self.Vth = vth
         self.dt = dt
         self.v_current = jnp.zeros((in_features, out_features))
-        self.spike_list, self.v_current = LIF_recall(self.tau, self.Vth, self.dt, self.zeros, self.v_current)
+        self.spike_list, self.v_current = LIF_recall(
+            self.tau, self.Vth, self.dt, self.zeros, self.v_current)
         self.reset_parameters()
         self.gamma = jnp.zeros(shape=(1, in_features))
 
@@ -26,7 +27,8 @@ class Linear(Module):
         size = self.zeros.shape
         stdv = 1. / math.sqrt(size[1])
         keyW = jax.random.PRNGKey(0)
-        self.weight = jax.random.uniform(minval=-stdv, maxval=stdv, shape=self.zeros.shape, key=keyW)
+        self.weight = jax.random.uniform(
+            minval=-stdv, maxval=stdv, shape=self.zeros.shape, key=keyW)
 
     def forward(self, input):
         def jnp_fn(input_jnp, weights_jnp):
@@ -36,16 +38,14 @@ class Linear(Module):
         jnp_args = (input, self.weight)
         index_add(self.gamma, index[:], input)
 
-
-
         return jnp_fn(*jnp_args)
-
 
     def backward(self, e_grad, timestep):
         fn, c, fh, fw = self.weight.shape
         tau = jnp.divide(jnp.subtract(timestep, self.spike_list[1]), -self.tau)
         prime = jnp.multiply(jnp.exp(tau), (-1 / self.tau))
-        aLIFnet = jnp.multiply(1 / self.Vth, (1 + jnp.multiply(jnp.divide(1, self.gamma, prime))))
+        aLIFnet = jnp.multiply(
+            1 / self.Vth, (1 + jnp.multiply(jnp.divide(1, self.gamma, prime))))
         self.grad = jnp.multiply(self.weight, aLIFnet)
 
         self.grad = self.grad.transpose(1, 0).reshape(fn, c, fh, fw)
@@ -56,4 +56,3 @@ class Linear(Module):
         return LIF_backward(self.tau, self.Vth, dx,
                             spike_list=self.spike_list, e_grad=e_grad,
                             time=timestep), self.weight
-

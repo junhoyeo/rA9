@@ -18,9 +18,9 @@ class Module(object):
 
     def add_module(self, name, module):
         if hasattr(self, name):
-            raise KeyError("attribute already exists '{}'".format(name))
+            raise KeyError('attribute already exists '{}''.format(name))
         if not isinstance(module, Module) and module is not None:
-            raise TypeError("This is not a Module subclass")
+            raise TypeError('This is not a Module subclass')
         self._modules[name] = module
 
     def _apply(self, fn):
@@ -60,7 +60,7 @@ class Module(object):
     #         modules = self.__dict__['_modules']
     #         if name in modules:
     #             return modules[name]
-    #     raise AttributeError("'{}' object has no attribute '{}'".format(
+    #     raise AttributeError(''{}' object has no attribute '{}''.format(
     #         type(self).__name__, name))
 
     # def __setattr__(self, name, value):
@@ -70,7 +70,7 @@ class Module(object):
     #         modules = self.__dict__.get('_modules')
     #         if isinstance(value, Module):
     #             if modules is None:
-    #                 raise AttributeError("cannot assign module before Module.__init__() call")
+    #                 raise AttributeError('cannot assign module before Module.__init__() call')
     #             modules[name] = value
     #         elif modules is not None and name in modules:
     #             modules[name] = value

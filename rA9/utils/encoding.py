@@ -11,8 +11,8 @@ class PoissonEncoder(object):
         self.key_x = random.PRNGKey(key)
 
     def Encoding(self, intensities):
-        assert jnp.all(intensities >= 0), "Inputs must be non-negative"
-        assert intensities.dtype == jnp.float32 or intensities.dtype == jnp.float64, "Intensities must be of type Float."
+        assert jnp.all(intensities >= 0), 'Inputs must be non-negative'
+        assert intensities.dtype == jnp.float32 or intensities.dtype == jnp.float64, 'Intensities must be of type Float.'
 
         # Get shape and size of data.
         shape, size = jnp.shape(intensities), jnp.size(intensities)
@@ -23,12 +23,14 @@ class PoissonEncoder(object):
         # accounting for simulation time step.
         rate_p = jnp.zeros(size)
         non_zero = intensities != 0
-        rate = index_update(rate_p, index[non_zero], 1 / intensities[non_zero] * (1000 / self.dt))
+        rate = index_update(
+            rate_p, index[non_zero], 1 / intensities[non_zero] * (1000 / self.dt))
         del rate_p
 
         # Create Poisson distribution and sample inter-spike intervals
         # (incrementing by 1 to avoid zero intervals).
-        intervals_p = random.poisson(key=self.key_x, lam=rate, shape=(time + 1, len(rate))).astype(jnp.float32)
+        intervals_p = random.poisson(key=self.key_x, lam=rate, shape=(
+            time + 1, len(rate))).astype(jnp.float32)
         intervals = index_add(intervals_p, index[:, intensities != 0],
                               (intervals_p[:, intensities != 0] == 0).astype(jnp.float32))
         del intervals_p
@@ -45,4 +47,3 @@ class PoissonEncoder(object):
         spikes = spikes[1:]
 
         return spikes.reshape(time, *shape)
-

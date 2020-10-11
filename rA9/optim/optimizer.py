@@ -13,7 +13,7 @@ class Optimizer(object):
         self.state = defaultdict(dict)
         self.param_groups = list(params)
         if len(self.param_groups) == 0:
-            raise ValueError("optimizer got an empty parameter list")
+            raise ValueError('optimizer got an empty parameter list')
         if not isinstance(self.param_groups[0], dict):
             self.param_groups = [{'params': self.param_groups}]
 
@@ -23,20 +23,18 @@ class Optimizer(object):
             group['params'] = list(group['params'])
             group_set = set(group['params'])
             if not param_set.isdisjoint(group_set):
-                raise ValueError("some parameters appear in more than one "
-                                 "parameter group")
+                raise ValueError('some parameters appear in more than one '
+                                 'parameter group')
             param_set.update(group_set)
 
         for name, default in defaults.items():
             for i, group in enumerate(self.param_groups):
                 if default is required and name not in group:
-                    raise ValueError("parameter group " + str(i) + " didn't "
-                                     "specify a value of required optimization parameter " +
+                    raise ValueError('parameter group ' + str(i) + ' didn't '
+                                     'specify a value of required optimization parameter ' +
                                      name)
                 else:
                     group.setdefault(name, default)
-
-
 
     def __getstate__(self):
         return {

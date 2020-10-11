@@ -25,8 +25,9 @@ class pool2d(Module):
         out = jnp_fn(*self.jnp_args)
         return out
 
-    def backward(self, grad_outputs,e_grad,timestep):
-        LIF_backward(self.tau, self.vth, grad_outputs, spike_list=self.spike_list, e_grad=e_grad, time=timestep)
+    def backward(self, grad_outputs, e_grad, timestep):
+        LIF_backward(self.tau, self.vth, grad_outputs,
+                     spike_list=self.spike_list, e_grad=e_grad, time=timestep)
 
 
 def _pool_forward(X, size=2, stride=2):
